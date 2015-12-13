@@ -1,3 +1,5 @@
+from __future__ import print_function, division
+
 import numpy as np
 from numpy.testing import assert_allclose, run_module_suite
 
@@ -37,8 +39,6 @@ def test_bootstrap_results():
 
     mu, sigma = mean_sigma(distribution)
 
-    print mu, sigma
-
     assert_allclose([mu, sigma], [0.08139846, 0.10465327])
 
 
@@ -55,6 +55,15 @@ def test_bootstrap_multiple():
 
     assert_allclose(res[0], dist_mean)
     assert_allclose(res[1], dist_std)
+
+def test_bootstrap_covar():
+    np.random.seed(0)
+    mean = [0.,0.]
+    covar = [[10.,3.],[3.,20.]]
+    x = np.random.multivariate_normal(mean, covar, 1000)
+
+    dist_cov = bootstrap(x, 10000, np.cov, kwargs=dict(rowvar=0), random_state=0)
+    assert_allclose(covar[0][0], dist_cov[0][0], atol=2.*0.4)
 
 
 def test_bootstrap_pass_indices():
